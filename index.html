@@ -1,0 +1,107 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Prediction Interface</title>
+    <script>
+        async function getPrediction() {
+            const fields = [
+                'id', 'cap-diameter', 'cap-shape', 'cap-surface', 'cap-color',
+                'does-bruise-or-bleed', 'gill-attachment', 'gill-spacing',
+                'gill-color', 'stem-height', 'stem-width', 'stem-root',
+                'stem-surface', 'stem-color', 'veil-type', 'veil-color',
+                'has-ring', 'ring-type', 'spore-print-color', 'habitat', 'season'
+            ];
+
+            let atLeastOneFilled = false;
+            const data = {};
+
+            fields.forEach(field => {
+                const value = document.getElementById(field).value.trim();
+                if (value !== '') {
+                    atLeastOneFilled = true;
+                }
+                data[field] = value;
+            });
+
+            if (!atLeastOneFilled) {
+                document.getElementById('result').textContent = 'Please fill in at least one field.';
+                return; 
+            }
+
+            try {
+                const response = await fetch('http://127.0.0.1:5000/predict', {
+                    method: 'POST',
+                    headers: {
+                        'Content-Type': 'application/json'
+                    },
+                    body: JSON.stringify(data)
+                });
+
+                if (!response.ok) {
+                    throw new Error('Network response was not ok');
+                }
+
+                const result = await response.json();
+                
+                const predictionLabel = result.prediction === 1 ? 'Edible' : 'Poisonous';
+                
+                document.getElementById('result').textContent = 'Prediction: ' + predictionLabel;
+            } catch (error) {
+                document.getElementById('result').textContent = 'An error occurred: ' + error.message;
+            }
+        }
+    </script>
+</head>
+<body>
+    <h1>Prediction Interface</h1>
+    
+    <label for="id">ID:</label>
+    <input type="text" id="id"><br><br>
+    <label for="cap-diameter">Cap Diameter:</label>
+    <input type="text" id="cap-diameter"><br><br>
+    <label for="cap-shape">Cap Shape:</label>
+    <input type="text" id="cap-shape"><br><br>
+    <label for="cap-surface">Cap Surface:</label>
+    <input type="text" id="cap-surface"><br><br>
+    <label for="cap-color">Cap Color:</label>
+    <input type="text" id="cap-color"><br><br>
+    <label for="does-bruise-or-bleed">Does Bruise or Bleed:</label>
+    <input type="text" id="does-bruise-or-bleed"><br><br>
+    <label for="gill-attachment">Gill Attachment:</label>
+    <input type="text" id="gill-attachment"><br><br>
+    <label for="gill-spacing">Gill Spacing:</label>
+    <input type="text" id="gill-spacing"><br><br>
+    <label for="gill-color">Gill Color:</label>
+    <input type="text" id="gill-color"><br><br>
+    <label for="stem-height">Stem Height:</label>
+    <input type="text" id="stem-height"><br><br>
+    <label for="stem-width">Stem Width:</label>
+    <input type="text" id="stem-width"><br><br>
+    <label for="stem-root">Stem Root:</label>
+    <input type="text" id="stem-root"><br><br>
+    <label for="stem-surface">Stem Surface:</label>
+    <input type="text" id="stem-surface"><br><br>
+    <label for="stem-color">Stem Color:</label>
+    <input type="text" id="stem-color"><br><br>
+    <label for="veil-type">Veil Type:</label>
+    <input type="text" id="veil-type"><br><br>
+    <label for="veil-color">Veil Color:</label>
+    <input type="text" id="veil-color"><br><br>
+    <label for="has-ring">Has Ring:</label>
+    <input type="text" id="has-ring"><br><br>
+    <label for="ring-type">Ring Type:</label>
+    <input type="text" id="ring-type"><br><br>
+    <label for="spore-print-color">Spore Print Color:</label>
+    <input type="text" id="spore-print-color"><br><br>
+    <label for="habitat">Habitat:</label>
+    <input type="text" id="habitat"><br><br>
+    <label for="season">Season:</label>
+    <input type="text" id="season"><br><br>
+    
+    <button onclick="getPrediction()">Submit</button>
+    
+    <p id="result"></p>
+</body>
+</html>
